@@ -1,6 +1,6 @@
 name: a4_iot
 description: "A new Flutter project."
-publish_to: 'none'
+publish_to: "none"
 version: 0.1.0
 
 environment:
@@ -9,6 +9,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  supabase_flutter: ^2.0.0
+  dotenv: ^5.0.0
+  http: ^1.0.0
 
 dev_dependencies:
   flutter_test:
