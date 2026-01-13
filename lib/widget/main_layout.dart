@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:a4_iot/pages/home_page.dart';
+import 'package:a4_iot/pages/promo_page.dart';
 
 class MainLayout extends StatefulWidget {
   const MainLayout({super.key});
@@ -11,7 +12,7 @@ class MainLayout extends StatefulWidget {
 class _MainLayoutState extends State<MainLayout> {
   int _currentIndex = 0;
 
-  final List<Widget> _pages = const [HomeView()];
+  final List<Widget> _pages = const [HomeView(), PromotionPage()];
   // final List<Widget> _pages = const [HomeView(), PromsView()];
 
   @override
