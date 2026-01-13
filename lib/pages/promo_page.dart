@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:a4_iot/widget/profile_card.dart';
 
 void main() {
   runApp(
@@ -177,28 +176,125 @@ class PromotionPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors
+          .grey[50], // Fond légèrement grisé pour faire ressortir les lignes
       appBar: AppBar(
+        elevation: 0,
         title: const Text("Promotion CESI 2026"),
         backgroundColor: Colors.indigo,
         foregroundColor: Colors.white,
       ),
       body: ListView.builder(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(vertical: 12),
         itemCount: mockStudents.length,
         itemBuilder: (context, index) {
           final student = mockStudents[index];
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 16),
-            child: ProfileCard(
-              firstName: student['firstName']!,
-              lastName: student['lastName']!,
-              status: student['status']!,
-              proms: student['proms']!,
-              campus: student['campus']!,
-              avatarUrl: student['avatarUrl']!,
-            ),
+
+          // --- LOGIQUE DE SIMULATION ---
+          // On simule une absence pour 1 étudiant sur 5 environ
+          // (dans votre vraie app, cela viendra de votre BDD/API)
+          final bool simulatedIsPresent = index % 5 != 0;
+
+          return StudentRowItem(
+            firstName: student['firstName']!,
+            lastName: student['lastName']!,
+            avatarUrl: student['avatarUrl']!,
+            isPresent: simulatedIsPresent,
           );
         },
+      ),
+    );
+  }
+}
+
+// --- NOUVEAU WIDGET : Ligne compacte ---
+class StudentRowItem extends StatelessWidget {
+  final String firstName;
+  final String lastName;
+  final String avatarUrl;
+  final bool isPresent;
+
+  const StudentRowItem({
+    super.key,
+    required this.firstName,
+    required this.lastName,
+    required this.avatarUrl,
+    required this.isPresent,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    // Définition des couleurs selon le statut
+    final statusColor = isPresent ? Colors.green[700]! : Colors.red[700]!;
+    final statusBgColor = isPresent ? Colors.green[50]! : Colors.red[50]!;
+    final statusText = isPresent ? "Présent" : "Absent";
+    final statusIcon = isPresent ? Icons.check_circle : Icons.cancel;
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        // Bordure subtile qui change de couleur selon le statut
+        border: Border.all(color: statusColor.withOpacity(0.3), width: 1),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 5,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          // --- GAUCHE : Avatar + Nom ---
+          CircleAvatar(
+            radius: 22,
+            backgroundImage: NetworkImage(avatarUrl),
+            backgroundColor: Colors.grey[200],
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "$firstName $lastName",
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    color: Colors.black87,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: statusBgColor,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(statusIcon, color: statusColor, size: 18),
+                const SizedBox(width: 8),
+                Text(
+                  statusText,
+                  style: TextStyle(
+                    color: statusColor,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
