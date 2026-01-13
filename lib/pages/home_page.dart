@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:a4_iot/widget/profile_card.dart';
 
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+class HomeView extends StatelessWidget {
+  const HomeView({super.key});
 
   @override
   Widget build(BuildContext context) {
