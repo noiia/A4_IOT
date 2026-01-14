@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-import 'package:a4_iot/config/env.dart';
-import 'package:a4_iot/views/login_view.dart';
-import 'package:a4_iot/widget/main_layout.dart';
+import 'package:a4_iot/core/config/env.dart';
+import 'package:a4_iot/presentation/views/login_view.dart';
+import 'package:a4_iot/presentation/widget/main_layout.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

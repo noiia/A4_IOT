@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:a4_iot/views/home_view.dart';
+import 'package:a4_iot/presentation/views/home_view.dart';
 
 class MainLayout extends StatefulWidget {
   const MainLayout({super.key});

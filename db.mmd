@@ -1,0 +1,52 @@
+%%{init: {'er': {'layout': 'elk'}, 'flowchart': {'curve': 'linear'}}}%%
+erDiagram
+    direction LR
+
+    USERS {
+        uuid        badge_id     PK
+        uuid        auth_user_id PK
+        uuid        proms_id     FK
+        string      last_name
+        string      first_name
+        string      status
+        string      avatar_url
+        timestampz  created_at
+    }
+
+    ROOMS {
+        uuid        id          PK
+        string      name
+        string      campus
+        int         capacity
+        timestampz  created_at
+    }
+
+    RESERVATIONS {
+        uuid        id          PK
+        uuid[]      users       FK
+        timestampz  starts
+        timestampz  ends
+        timestampz  created_at
+    }
+
+    PROMS {
+        uuid        id          PK
+        string      name
+        string      city
+        timestampz  created_at
+    }
+
+    COURSES {
+        uuid        id              PK
+        string      course_name
+        uuid        instructor      FK
+        uuid        room            FK      
+        uuid        reservation     FK      
+        timestampz  created_at
+    }
+
+    USERS }o--|| RESERVATIONS : "reserve"
+    USERS }o--|| PROMS : "belongs to"
+    COURSES ||--o{ USERS : "teaches"
+    COURSES ||--o{ ROOMS : "where"
+    COURSES ||--o{ RESERVATIONS : "when"

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:a4_iot/types/course_list.dart';
+import 'package:a4_iot/data/models/courses.dart';
 
 class CourseList extends StatelessWidget {
-  final List<CourseListType> courses;
+  final List<Courses> courses;
   const CourseList({super.key, required this.courses});
 
   @override
