@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:a4_iot/pages/home_page.dart';
+import 'package:a4_iot/views/home_view.dart';
 import 'package:a4_iot/pages/promo_page.dart';
 
 class MainLayout extends StatefulWidget {
