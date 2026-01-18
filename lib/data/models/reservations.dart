@@ -6,6 +6,7 @@ class ReservationsModel extends Reservations {
     required super.usersReserves,
     required super.starts,
     required super.ends,
+    required super.createdAt,
   });
 
   factory ReservationsModel.fromMap(Map<String, dynamic> map) {
@@ -14,6 +15,7 @@ class ReservationsModel extends Reservations {
       usersReserves: map['users_reserves'],
       starts: map['starts'],
       ends: map['ends'],
+      createdAt: DateTime.parse(map['created_at'] as String),
     );
   }
 
@@ -22,5 +24,6 @@ class ReservationsModel extends Reservations {
     "users_reserves": usersReserves,
     "starts": starts,
     "ends": ends,
+    "created_at": createdAt,
   };
 }

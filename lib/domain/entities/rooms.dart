@@ -4,6 +4,7 @@ class Rooms {
   final String name;
   final String campus;
   final int capacity;
+  final DateTime createdAt;
 
   Rooms({
     required this.id,
@@ -11,5 +12,6 @@ class Rooms {
     required this.name,
     required this.campus,
     required this.capacity,
+    required this.createdAt,
   });
 }

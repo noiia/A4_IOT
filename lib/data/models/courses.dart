@@ -7,6 +7,7 @@ class CoursesModel extends Courses {
     required super.instructor,
     required super.room,
     required super.reservation,
+    required super.createdAt,
   });
 
   factory CoursesModel.fromMap(Map<String, dynamic> map) {
@@ -16,6 +17,7 @@ class CoursesModel extends Courses {
       instructor: map['instructor'],
       room: map['room'],
       reservation: map['reservation'],
+      createdAt: DateTime.parse(map['created_at'] as String),
     );
   }
 
@@ -25,5 +27,6 @@ class CoursesModel extends Courses {
     "instructor": instructor,
     "room": room,
     "reservation": reservation,
+    "created_at": createdAt,
   };
 }

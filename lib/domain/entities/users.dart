@@ -6,6 +6,7 @@ class Users {
   final String promsId;
   final String status;
   final String avatarUrl;
+  final DateTime createdAt;
 
   Users({
     required this.id,
@@ -15,5 +16,6 @@ class Users {
     required this.promsId,
     required this.status,
     required this.avatarUrl,
+    required this.createdAt,
   });
 }

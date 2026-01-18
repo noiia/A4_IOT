@@ -9,27 +9,33 @@ class UsersModel extends Users {
     required super.promsId,
     required super.status,
     required super.avatarUrl,
+    required super.createdAt,
   });
 
   factory UsersModel.fromMap(Map<String, dynamic> map) {
-    return UsersModel(
-      id: map['id'],
+    final test = UsersModel(
+      id: map['auth_user_id'],
       badgeId: map['badge_id'],
       firstName: map['first_name'],
       lastName: map['last_name'],
       status: map['status'],
       avatarUrl: map['avatar_url'],
       promsId: map['proms_id'],
+      createdAt: DateTime.parse(map['created_at'] as String),
     );
+
+    print('test usermodel: $test');
+    return test;
   }
 
   Map<String, dynamic> toMap() => {
-    "id": id,
+    "auth_user_id": id,
     "badge_id": badgeId,
     "first_name": firstName,
     "last_name": lastName,
     "status": status,
-    "avatar_url": lastName,
+    "avatar_url": avatarUrl,
     "proms_id": promsId,
+    "created_at": createdAt,
   };
 }

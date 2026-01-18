@@ -4,6 +4,7 @@ class Campus {
   final String city;
   final String address;
   final String zipCode;
+  final DateTime createdAt;
 
   Campus({
     required this.id,
@@ -11,5 +12,6 @@ class Campus {
     required this.city,
     required this.address,
     required this.zipCode,
+    required this.createdAt,
   });
 }

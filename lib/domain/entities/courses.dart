@@ -4,6 +4,7 @@ class Courses {
   final String instructor;
   final String room;
   final String reservation;
+  final DateTime createdAt;
 
   Courses({
     required this.id,
@@ -11,5 +12,6 @@ class Courses {
     required this.instructor,
     required this.room,
     required this.reservation,
+    required this.createdAt,
   });
 }

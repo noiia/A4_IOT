@@ -7,6 +7,7 @@ class CampusModel extends Campus {
     required super.city,
     required super.address,
     required super.zipCode,
+    required super.createdAt,
   });
 
   factory CampusModel.fromMap(Map<String, dynamic> map) {
@@ -16,6 +17,7 @@ class CampusModel extends Campus {
       city: map['city'],
       address: map['address'],
       zipCode: map['zip_code'],
+      createdAt: DateTime.parse(map['created_at'] as String),
     );
   }
 
@@ -25,5 +27,6 @@ class CampusModel extends Campus {
     "city": city,
     "address": address,
     "zip_code": zipCode,
+    "created_at": createdAt,
   };
 }
