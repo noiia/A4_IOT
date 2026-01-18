@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:a4_iot/core/config/env.dart';
 import 'package:a4_iot/presentation/views/login_view.dart';
@@ -13,7 +14,7 @@ void main() async {
 
   await Supabase.initialize(url: Env.supabaseUrl, anonKey: Env.supabaseKey);
 
-  runApp(const MyApp());
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {

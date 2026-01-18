@@ -1,22 +1,29 @@
-class Courses {
-  String courseName;
-  String instructor;
-  String room;
-  String schedule;
+import 'package:a4_iot/domain/entities/courses.dart';
 
-  Courses({
-    required this.courseName,
-    required this.instructor,
-    required this.room,
-    required this.schedule,
+class CoursesModel extends Courses {
+  CoursesModel({
+    required super.id,
+    required super.courseName,
+    required super.instructor,
+    required super.room,
+    required super.reservation,
   });
 
-  factory Courses.fromMap(Map<String, dynamic> map) {
-    return Courses(
+  factory CoursesModel.fromMap(Map<String, dynamic> map) {
+    return CoursesModel(
+      id: map['id'],
       courseName: map['course_name'],
       instructor: map['instructor'],
       room: map['room'],
-      schedule: map['schedule'],
+      reservation: map['reservation'],
     );
   }
+
+  Map<String, dynamic> toMap() => {
+    "id": id,
+    "course_name": courseName,
+    "instructor": instructor,
+    "room": room,
+    "reservation": reservation,
+  };
 }

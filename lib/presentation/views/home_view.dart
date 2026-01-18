@@ -1,22 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:a4_iot/data/models/courses.dart';
+import 'package:a4_iot/domain/entities/courses.dart';
+import 'package:a4_iot/domain/entities/users.dart';
+import 'package:a4_iot/presentation/controllers/courses.dart';
+import 'package:a4_iot/presentation/controllers/users.dart';
 import 'package:a4_iot/presentation/views/login_view.dart';
 import 'package:a4_iot/presentation/widget/course_list.dart';
 import 'package:a4_iot/presentation/widget/fullscreen_button.dart';
 import 'package:a4_iot/presentation/widget/profile_card.dart';
 
-class HomeView extends StatefulWidget {
+class HomeView extends ConsumerStatefulWidget {
   const HomeView({super.key});
+
   @override
-  State<HomeView> createState() => _HomeViewState();
+  ConsumerState<HomeView> createState() => _HomeViewState();
 }
 
-class _HomeViewState extends State<HomeView> {
-  bool _loading = false;
-  String? _error;
-
+class _HomeViewState extends ConsumerState<HomeView> {
   Future<void> _logout(BuildContext context) async {
     await Supabase.instance.client.auth.signOut();
 
@@ -28,39 +30,7 @@ class _HomeViewState extends State<HomeView> {
     }
   }
 
-  Future<Map<String, dynamic>> _getProfile() async {
-    final supabase = Supabase.instance.client;
-
-    return await supabase
-        .from('users')
-        .select('first_name, last_name, status, avatar_url, proms(name, city)')
-        .eq('auth_user_id', supabase.auth.currentUser!.id)
-        .single();
-  }
-
-  Future<List<Courses>> _getCourses() async {
-    final supabase = Supabase.instance.client;
-
-    final response = await supabase
-        .from('courses')
-        .select('course_name, instructor, room, reservation')
-        .eq('user_id', supabase.auth.currentUser!.id);
-
-    final data = response as List;
-
-    return data
-        .map(
-          (e) => Courses(
-            courseName: e['course_name'],
-            instructor: e['instructor'],
-            room: e['room'],
-            schedule: e['schedule'],
-          ),
-        )
-        .toList();
-  }
-
-  Widget _buildPage(Map<String, dynamic> user, List<Courses> courses) {
+  Widget _buildPage(Users user, List<Courses> courses) {
     return LayoutBuilder(
       builder: (context, constraints) {
         return SingleChildScrollView(
@@ -72,12 +42,12 @@ class _HomeViewState extends State<HomeView> {
                   SizedBox(
                     width: 500,
                     child: ProfileCard(
-                      firstName: user['first_name'],
-                      lastName: user['last_name'],
-                      status: user['status'],
-                      proms: user['proms']['name'],
-                      campus: user['proms']['city'],
-                      avatarUrl: user['avatar_url'],
+                      firstName: user.firstName,
+                      lastName: user.lastName,
+                      status: user.status,
+                      proms: 'user.promsId.name',
+                      campus: 'user.promsId.campus_id.name',
+                      avatarUrl: user.avatarUrl,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -99,22 +69,19 @@ class _HomeViewState extends State<HomeView> {
 
   @override
   Widget build(BuildContext context) {
+    final coursesAsync = ref.watch(coursesProvider);
+    final userAsync = ref.watch(usersProvider);
+
     return Scaffold(
-      body: FutureBuilder(
-        future: Future.wait([_getProfile(), _getCourses()]),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          if (snapshot.hasError) {
-            return Center(child: Text("Erreur : ${snapshot.error}"));
-          }
-
-          final user = snapshot.data![0] as Map<String, dynamic>;
-          final courses = snapshot.data![1] as List<Courses>;
-
-          return _buildPage(user, courses);
+      body: userAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (e, _) => Center(child: Text("Erreur user : $e")),
+        data: (user) {
+          return coursesAsync.when(
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (e, _) => Center(child: Text("Erreur cours : $e")),
+            data: (courses) => _buildPage(user, courses),
+          );
         },
       ),
     );

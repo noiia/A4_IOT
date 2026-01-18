@@ -6,47 +6,72 @@ erDiagram
         uuid        badge_id     PK
         uuid        auth_user_id PK
         uuid        proms_id     FK
-        string      last_name
         string      first_name
+        string      last_name
         string      status
         string      avatar_url
         timestampz  created_at
     }
 
     ROOMS {
-        uuid        id          PK
+        uuid        id              PK
+        uuid        campus_id       FK
         string      name
-        string      campus
         int         capacity
         timestampz  created_at
     }
 
     RESERVATIONS {
-        uuid        id          PK
-        uuid[]      users       FK
+        uuid        id                  PK
+        uuid        users_reservation   FK
         timestampz  starts
         timestampz  ends
         timestampz  created_at
     }
 
+    USERS_RESERVES {
+        uuid        id              PK
+        uuid        user_id         FK
+        uuid        reservation_id  FK
+        timestampz  created_at
+    }
+
     PROMS {
-        uuid        id          PK
+        uuid        id              PK
+        uuid        campus_id       FK
         string      name
-        string      city
         timestampz  created_at
     }
 
     COURSES {
         uuid        id              PK
         string      course_name
-        uuid        instructor      FK
-        uuid        room            FK      
-        uuid        reservation     FK      
+        uuid        instructor_id      FK
+        uuid        room_id            FK      
+        uuid        reservation_id     FK      
         timestampz  created_at
     }
 
-    USERS }o--|| RESERVATIONS : "reserve"
+    CAMPUS {
+        uuid        id              PK
+        string      name
+        string      city
+        string      address
+        string      zip_code    
+        timestampz  created_at
+    }
+
+    USERS ||--o{ USERS_RESERVES : "reserve"
+    USERS_RESERVES }o--|| RESERVATIONS : "reserve"
+    PROMS ||--o{ USERS : "has"
     USERS }o--|| PROMS : "belongs to"
-    COURSES ||--o{ USERS : "teaches"
-    COURSES ||--o{ ROOMS : "where"
-    COURSES ||--o{ RESERVATIONS : "when"
+    USERS ||--o{ COURSES : "teaches"
+    ROOMS ||--o{ COURSES : "takes place in"
+    COURSES ||--|| RESERVATIONS : "is scheduled for"
+    RESERVATIONS ||--o{ COURSES : "schedules"
+    CAMPUS ||--o{ ROOMS : "has"
+    CAMPUS ||--o{ PROMS : "has"
+
+
+
+

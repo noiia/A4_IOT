@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:a4_iot/data/models/courses.dart';
+import 'package:a4_iot/domain/entities/courses.dart';
 
 class CourseList extends StatelessWidget {
   final List<Courses> courses;
@@ -17,7 +17,7 @@ class CourseList extends StatelessWidget {
           return ListTile(
             title: Text(course.courseName),
             subtitle: Text(
-              '${course.room} - ${course.instructor} - ${course.schedule}',
+              '${course.room} - ${course.instructor} - ${course.reservation}',
             ),
           );
         },

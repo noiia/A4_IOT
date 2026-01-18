@@ -1,11 +1,11 @@
-class Proms {
-  final String id;
-  final String name;
-  final String city;
+import 'package:a4_iot/domain/entities/proms.dart';
 
-  Proms({required this.id, required this.name, required this.city});
+class PromsModel extends Proms {
+  PromsModel({required super.id, required super.name, required super.city});
 
-  factory Proms.fromMap(Map<String, dynamic> map) {
-    return Proms(id: map['id'], name: map['name'], city: map['city']);
+  factory PromsModel.fromMap(Map<String, dynamic> map) {
+    return PromsModel(id: map['id'], name: map['name'], city: map['city']);
   }
+
+  Map<String, dynamic> toMap() => {"id": id, "name": name, "city": city};
 }
