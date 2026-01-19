@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:a4_iot/config/env.dart';
-import 'package:a4_iot/views/login_view.dart';
-import 'package:a4_iot/widget/main_layout.dart';
+import 'package:a4_iot/core/config/env.dart';
+import 'package:a4_iot/presentation/views/login_view.dart';
+import 'package:a4_iot/presentation/widget/main_layout.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,7 +14,7 @@ void main() async {
 
   await Supabase.initialize(url: Env.supabaseUrl, anonKey: Env.supabaseKey);
 
-  runApp(const MyApp());
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -36,7 +37,7 @@ class AuthGate extends StatelessWidget {
     return StreamBuilder<AuthState>(
       stream: Supabase.instance.client.auth.onAuthStateChange,
       builder: (context, snapshot) {
-        final session = Supabase.instance.client.auth.currentSession;
+        final session = snapshot.data?.session;
 
         if (session != null) {
           return const MainLayout();

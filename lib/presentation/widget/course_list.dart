@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:a4_iot/types/course_list.dart';
+import 'package:a4_iot/domain/entities/courses.dart';
 
 class CourseList extends StatelessWidget {
-  final List<CourseListType> courses;
+  final List<Courses> courses;
   const CourseList({super.key, required this.courses});
 
   @override
@@ -17,7 +17,7 @@ class CourseList extends StatelessWidget {
           return ListTile(
             title: Text(course.courseName),
             subtitle: Text(
-              '${course.room} - ${course.instructor} - ${course.schedule}',
+              '${course.room} - ${course.instructor} - ${course.reservation}',
             ),
           );
         },
