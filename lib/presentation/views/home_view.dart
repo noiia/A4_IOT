@@ -109,29 +109,38 @@ class _HomeViewState extends ConsumerState<HomeView> {
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (e, _) => Center(child: Text("Erreur campus : $e")),
                 data: (campus) {
-                  final reservationsAsync = ref.watch(
-                    reservationsByIdProvider(user.id),
-                  );
+                  final test = reservationsByIdProvider(user.id);
+                  final reservationsAsync = ref.watch(test);
                   return reservationsAsync.when(
-                    loading: () =>
-                        const Center(child: CircularProgressIndicator()),
+                    loading: () => const Center(
+                      child: CircularProgressIndicator(color: Colors.blue),
+                    ),
                     error: (e, _) =>
                         Center(child: Text("Erreur reservation : $e")),
                     data: (reservations) {
-                      print("Reservations: $reservations");
-                      final test = reservations.map((e) => e.id).toList();
-                      print("Reservations IDs: $test");
-                      final coursesAsync = ref.watch(
-                        coursesByReservationIdsProvider(test),
-                      );
-                      return coursesAsync.when(
-                        loading: () =>
-                            const Center(child: CircularProgressIndicator()),
-                        error: (e, _) =>
-                            Center(child: Text("Erreur cours : $e")),
-                        data: (courses) =>
-                            _buildPage(user, proms, courses, campus),
-                      );
+                      if (reservations.isNotEmpty) {
+                        print("Reservations: $reservations");
+                        final test = reservations.map((e) => e.id).toList();
+                        print("Reservations IDs: $test");
+                        final coursesAsync = ref.watch(
+                          coursesByReservationIdsProvider(
+                            reservations.map((e) => e.id).toList(),
+                          ),
+                        );
+                        return coursesAsync.when(
+                          loading: () => const Center(
+                            child: CircularProgressIndicator(
+                              color: Colors.green,
+                            ),
+                          ),
+                          error: (e, _) =>
+                              Center(child: Text("Erreur cours : $e")),
+                          data: (courses) =>
+                              _buildPage(user, proms, courses, campus),
+                        );
+                      } else {
+                        return _buildPage(user, proms, [], campus);
+                      }
                     },
                   );
                 },
