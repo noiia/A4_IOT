@@ -21,6 +21,26 @@ class GetCoursesById {
   }
 }
 
+class GetCoursesByIds {
+  final CourseRepository repository;
+
+  GetCoursesByIds(this.repository);
+
+  Future<List<Courses>> call(List<String> ids) {
+    return repository.getCoursesByIds(ids);
+  }
+}
+
+class GetCoursesByReservationIds {
+  final CourseRepository repository;
+
+  GetCoursesByReservationIds(this.repository);
+
+  Future<List<Courses>> call(List<String> ids) {
+    return repository.getCoursesByReservationIds(ids);
+  }
+}
+
 class CreateCourses {
   final CourseRepository repository;
 

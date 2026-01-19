@@ -34,6 +34,16 @@ final getCourseByIdProvider = Provider<GetCoursesById>((ref) {
   return GetCoursesById(ref.read(courseRepositoryProvider));
 });
 
+final getCoursesByIdsProvider = Provider<GetCoursesByIds>((ref) {
+  return GetCoursesByIds(ref.read(courseRepositoryProvider));
+});
+
+final getCoursesByReservationIdsProvider = Provider<GetCoursesByReservationIds>(
+  (ref) {
+    return GetCoursesByReservationIds(ref.read(courseRepositoryProvider));
+  },
+);
+
 final createCourseProvider = Provider<CreateCourses>((ref) {
   return CreateCourses(ref.read(courseRepositoryProvider));
 });
@@ -46,9 +56,19 @@ final deleteCourseProvider = Provider<DeleteCourses>((ref) {
   return DeleteCourses(ref.read(courseRepositoryProvider));
 });
 
-final coursesProvider = FutureProvider<List<Courses>>((ref) async {
-  final userId = Supabase.instance.client.auth.currentUser!.id;
-  final getCourses = ref.read(getCoursesProvider);
+final coursesByIdsProvider = FutureProvider.family<List<Courses>, List<String>>(
+  (ref, userId) async {
+    final getCoursesByIds = ref.read(getCoursesByIdsProvider);
 
-  return getCourses(userId);
-});
+    return getCoursesByIds(userId);
+  },
+);
+
+final coursesByReservationIdsProvider =
+    FutureProvider.family<List<Courses>, List<String>>((ref, userId) async {
+      final getCoursesByReservationIds = ref.read(
+        getCoursesByReservationIdsProvider,
+      );
+
+      return getCoursesByReservationIds(userId);
+    });

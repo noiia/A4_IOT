@@ -4,7 +4,7 @@ class PromsModel extends Proms {
   PromsModel({
     required super.id,
     required super.name,
-    required super.city,
+    required super.campusId,
     required super.createdAt,
   });
 
@@ -12,7 +12,7 @@ class PromsModel extends Proms {
     return PromsModel(
       id: map['id'],
       name: map['name'],
-      city: map['city'],
+      campusId: map['campus_id'],
       createdAt: DateTime.parse(map['created_at'] as String),
     );
   }
@@ -20,7 +20,7 @@ class PromsModel extends Proms {
   Map<String, dynamic> toMap() => {
     "id": id,
     "name": name,
-    "city": city,
+    "campus_id": campusId,
     "created_at": createdAt,
   };
 }

@@ -1,13 +1,13 @@
 class Proms {
   final String id;
   final String name;
-  final String city;
+  final String campusId;
   final DateTime createdAt;
 
   Proms({
     required this.id,
     required this.name,
-    required this.city,
+    required this.campusId,
     required this.createdAt,
   });
 }

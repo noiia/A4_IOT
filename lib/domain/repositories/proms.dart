@@ -4,9 +4,9 @@ abstract class PromsRepository {
   Future<List<Proms>> getProms();
   Future<Proms> getPromById(String id);
 
-  Future<void> setProms(String name, String city);
+  Future<void> setProms(String name, String campusId);
 
-  Future<void> updateProms(String id, String? name, String? city);
+  Future<void> updateProms(String id, String? name, String? campusId);
 
   Future<void> deleteProms(String id);
 }

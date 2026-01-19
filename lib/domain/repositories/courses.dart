@@ -3,6 +3,8 @@ import 'package:a4_iot/domain/entities/courses.dart';
 abstract class CourseRepository {
   Future<List<Courses>> getCourses();
   Future<Courses> getCourseById(String id);
+  Future<List<Courses>> getCoursesByIds(List<String> ids);
+  Future<List<Courses>> getCoursesByReservationIds(List<String> ids);
 
   Future<void> setCourses(
     String courseName,

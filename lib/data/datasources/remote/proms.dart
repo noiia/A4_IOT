@@ -13,14 +13,17 @@ class PromsRemoteDatasource {
     return await client.from('proms').select().eq('id', id).single();
   }
 
-  Future<void> createProm(String name, String city) async {
-    return await client.from('proms').insert({'name': name, 'city': city});
+  Future<void> createProm(String name, String campusId) async {
+    return await client.from('proms').insert({
+      'name': name,
+      'campus_id': campusId,
+    });
   }
 
-  Future<void> updateProm(String id, String? name, String? city) async {
+  Future<void> updateProm(String id, String? name, String? campusId) async {
     return await client
         .from('proms')
-        .update({'name': name, 'city': city})
+        .update({'name': name, 'campus_id': campusId})
         .eq('id', id);
   }
 

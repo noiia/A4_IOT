@@ -2,7 +2,8 @@ import 'package:a4_iot/domain/entities/reservations.dart';
 
 abstract class ReservationsRepository {
   Future<List<Reservations>> getReservations();
-  Future<Reservations> getReservationsById(String id);
+  Future<List<Reservations>> getReservationsById(String id);
+  Future<List<Reservations>> getReservationsByIds(List<String> ids);
 
   Future<void> setReservations(
     String usersReserves,

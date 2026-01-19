@@ -27,7 +27,7 @@ class GetUsersByBadgeId {
   GetUsersByBadgeId(this.repository);
 
   Future<Users> call(String id) {
-    return repository.getUsersByAuthUserId(id);
+    return repository.getUsersByBadgeId(id);
   }
 }
 

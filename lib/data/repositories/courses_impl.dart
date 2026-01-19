@@ -29,6 +29,18 @@ class CourseRepositoryImpl implements CourseRepository {
     return CoursesModel.fromMap(remoteData);
   }
 
+  @override
+  Future<List<Courses>> getCoursesByIds(List<String> ids) async {
+    final remoteData = await remote.fetchCoursesByIds(ids);
+    return remoteData.map((e) => CoursesModel.fromMap(e)).toList();
+  }
+
+  @override
+  Future<List<Courses>> getCoursesByReservationIds(List<String> ids) async {
+    final remoteData = await remote.fetchCoursesByReservationIds(ids);
+    return remoteData.map((e) => CoursesModel.fromMap(e)).toList();
+  }
+
   Future<List<Courses>> getCoursesByUsersId(String id) async {
     try {
       final remoteData = await remote.fetchUsersCourses(id);
