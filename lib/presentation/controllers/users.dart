@@ -63,11 +63,17 @@ final allUsersProvider = FutureProvider<List<Users>>((ref) async {
   return await getUsers("unused");
 });
 
-/// Filtre les étudiants par promo
 final studentsByPromsIdProvider = FutureProvider.family<List<Users>, String>((
   ref,
   promsId,
 ) async {
-  final users = await ref.watch(allUsersProvider.future);
-  return users.where((u) => u.promsId == promsId).toList();
+  final allUsers = await ref.watch(allUsersProvider.future);
+
+  for (var u in allUsers) {
+    // On affiche les 3 premiers pour pas polluer
+    if (allUsers.indexOf(u) < 3) {}
+  }
+  return allUsers
+      .where((user) => user.promsId.trim() == promsId.trim())
+      .toList();
 });

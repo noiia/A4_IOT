@@ -7,7 +7,6 @@ class Users {
   final String status;
   final String avatarUrl;
   final DateTime createdAt;
-  final String role;
 
   Users({
     required this.id,
@@ -18,6 +17,5 @@ class Users {
     required this.status,
     required this.avatarUrl,
     required this.createdAt,
-    required this.role,
   });
 }
