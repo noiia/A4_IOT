@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:a4_iot/domain/entities/campus.dart';
 import 'package:a4_iot/domain/entities/courses.dart';
@@ -10,9 +9,7 @@ import 'package:a4_iot/presentation/controllers/courses.dart';
 import 'package:a4_iot/presentation/controllers/users.dart';
 import 'package:a4_iot/presentation/controllers/proms.dart';
 import 'package:a4_iot/presentation/controllers/campus.dart';
-import 'package:a4_iot/presentation/views/login_view.dart';
 import 'package:a4_iot/presentation/widget/course_list.dart';
-import 'package:a4_iot/presentation/widget/fullscreen_button.dart';
 import 'package:a4_iot/presentation/widget/profile_card.dart';
 
 class HomeView extends ConsumerStatefulWidget {
@@ -23,26 +20,12 @@ class HomeView extends ConsumerStatefulWidget {
 }
 
 class _HomeViewState extends ConsumerState<HomeView> {
-  Future<void> _logout(BuildContext context) async {
-    await Supabase.instance.client.auth.signOut();
-
-    if (context.mounted) {
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => const LoginView()),
-        (_) => false,
-      );
-    }
-  }
-
   Widget _buildPage(
     Users user,
     Proms proms,
     List<Courses> courses,
     Campus campus,
   ) {
-    print(
-      'user ${user.firstName}, proms ${proms.name}, courses ${courses.length}, campus ${campus.name}',
-    );
     return LayoutBuilder(
       builder: (context, constraints) {
         return SingleChildScrollView(
@@ -78,8 +61,6 @@ class _HomeViewState extends ConsumerState<HomeView> {
                           )
                         : CourseList(courses: courses),
                   ),
-                  const SizedBox(height: 36),
-                  FullScreenButton(name: 'Se déconnecter', function: _logout),
                 ],
               ),
             ),
