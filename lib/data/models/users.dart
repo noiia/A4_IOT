@@ -10,6 +10,7 @@ class UsersModel extends Users {
     required super.status,
     required super.avatarUrl,
     required super.createdAt,
+    required super.role,
   });
 
   factory UsersModel.fromMap(Map<String, dynamic> map) {
@@ -21,6 +22,7 @@ class UsersModel extends Users {
       status: map['status'],
       avatarUrl: map['avatar_url'],
       promsId: map['proms_id'],
+      role: map['role'],
       createdAt: DateTime.parse(map['created_at'] as String),
     );
   }

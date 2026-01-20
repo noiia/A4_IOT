@@ -1,6 +1,6 @@
+import 'package:a4_iot/presentation/views/prom_view.dart';
 import 'package:flutter/material.dart';
 import 'package:a4_iot/presentation/views/home_view.dart';
-import 'package:a4_iot/pages/promo_page.dart';
 
 class MainLayout extends StatefulWidget {
   const MainLayout({super.key});
@@ -12,7 +12,7 @@ class MainLayout extends StatefulWidget {
 class _MainLayoutState extends State<MainLayout> {
   int _currentIndex = 0;
 
-  final List<Widget> _pages = const [HomeView(), PromotionPage()];
+  final List<Widget> _pages = const [HomeView(), PromsPageView()];
   // final List<Widget> _pages = const [HomeView(), PromsView()];
 
   @override

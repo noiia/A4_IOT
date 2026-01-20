@@ -56,3 +56,18 @@ final usersProvider = FutureProvider<Users>((ref) async {
 
   return getUsersByAuthUserId(userId);
 });
+
+final allUsersProvider = FutureProvider<List<Users>>((ref) async {
+  final getUsers = ref.read(getUsersProvider);
+  // Adaptez l'appel si votre call() demande un paramètre
+  return await getUsers("unused");
+});
+
+/// Filtre les étudiants par promo
+final studentsByPromsIdProvider = FutureProvider.family<List<Users>, String>((
+  ref,
+  promsId,
+) async {
+  final users = await ref.watch(allUsersProvider.future);
+  return users.where((u) => u.promsId == promsId).toList();
+});
