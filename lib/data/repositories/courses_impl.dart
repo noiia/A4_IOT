@@ -38,7 +38,9 @@ class CourseRepositoryImpl implements CourseRepository {
   @override
   Future<List<Courses>> getCoursesByReservationIds(List<String> ids) async {
     final remoteData = await remote.fetchCoursesByReservationIds(ids);
-    return remoteData.map((e) => CoursesModel.fromMap(e)).toList();
+    final test = remoteData.map((e) => CoursesModel.fromMap(e)).toList();
+    print("🔥 COURSES REPO $test");
+    return test;
   }
 
   Future<List<Courses>> getCoursesByUsersId(String id) async {

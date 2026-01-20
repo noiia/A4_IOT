@@ -4,9 +4,9 @@ class CoursesModel extends Courses {
   CoursesModel({
     required super.id,
     required super.courseName,
-    required super.instructor,
-    required super.room,
-    required super.reservation,
+    required super.instructorId,
+    required super.roomId,
+    required super.reservationId,
     required super.createdAt,
   });
 
@@ -14,9 +14,9 @@ class CoursesModel extends Courses {
     return CoursesModel(
       id: map['id'],
       courseName: map['course_name'],
-      instructor: map['instructor'],
-      room: map['room'],
-      reservation: map['reservation'],
+      instructorId: map['instructor_id'],
+      roomId: map['room_id'],
+      reservationId: map['reservation_id'],
       createdAt: DateTime.parse(map['created_at'] as String),
     );
   }
@@ -24,9 +24,9 @@ class CoursesModel extends Courses {
   Map<String, dynamic> toMap() => {
     "id": id,
     "course_name": courseName,
-    "instructor": instructor,
-    "room": room,
-    "reservation": reservation,
+    "instructor_id": instructorId,
+    "room_id": roomId,
+    "reservation_id": reservationId,
     "created_at": createdAt,
   };
 }

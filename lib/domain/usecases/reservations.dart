@@ -31,6 +31,16 @@ class GetReservationsByIds {
   }
 }
 
+class GetReservationsFromUsersReservesByUserId {
+  final ReservationsRepository repository;
+
+  GetReservationsFromUsersReservesByUserId(this.repository);
+
+  Future<List<Reservations>> call(String id) {
+    return repository.getReservationsFromUsersReservesByUserId(id);
+  }
+}
+
 class CreateReservations {
   final ReservationsRepository repository;
 

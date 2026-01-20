@@ -17,13 +17,16 @@ class CourseRemoteDatasource {
     if (ids.isEmpty) {
       return [];
     }
-    return await client.from('courses').select().eq('id', ids);
+    return await client.from('courses').select().filter('id', 'in', ids);
   }
 
   Future<List<Map<String, dynamic>>> fetchCoursesByReservationIds(
     List<String> ids,
   ) async {
-    return await client.from('courses').select().eq('reservation_id', ids);
+    return await client
+        .from('courses')
+        .select()
+        .filter('reservation_id', 'in', ids);
   }
 
   Future<List<Map<String, dynamic>>> fetchCoursesByInstructor(String id) async {

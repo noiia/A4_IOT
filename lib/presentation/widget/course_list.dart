@@ -17,7 +17,7 @@ class CourseList extends StatelessWidget {
           return ListTile(
             title: Text(course.courseName),
             subtitle: Text(
-              '${course.room} - ${course.instructor} - ${course.reservation}',
+              '${course.roomId} - ${course.instructorId} - ${course.reservationId}',
             ),
           );
         },

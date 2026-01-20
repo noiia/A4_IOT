@@ -36,6 +36,18 @@ class ReservationsRepositoryImpl implements ReservationsRepository {
   }
 
   @override
+  Future<List<Reservations>> getReservationsFromUsersReservesByUserId(
+    String id,
+  ) async {
+    final remoteData = await remote.fetchReservationsFromUsersReservesByUserId(
+      id,
+    );
+    return remoteData
+        .map((e) => ReservationsModel.fromMap(e['reservation']))
+        .toList();
+  }
+
+  @override
   Future<void> setReservations(
     String usersReserves,
     DateTime start,
