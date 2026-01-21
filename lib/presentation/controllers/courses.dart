@@ -45,6 +45,10 @@ final getCoursesByReservationIdsProvider = Provider<GetCoursesByReservationIds>(
   },
 );
 
+final getHomeCoursesByIdProvider = Provider<GetHomeCoursesByIds>((ref) {
+  return GetHomeCoursesByIds(ref.read(courseRepositoryProvider));
+});
+
 final createCourseProvider = Provider<CreateCourses>((ref) {
   return CreateCourses(ref.read(courseRepositoryProvider));
 });
@@ -79,13 +83,18 @@ final userCoursesProvider = FutureProvider.autoDispose
       final reservations = await ref.read(
         reservationsFromUsersReservesByUserIdProvider(userBadgeId).future,
       );
-      
+
       if (reservations.isEmpty) return [];
 
-      final reservationId = reservations.map((e) => e.id).join(',');
-      final test = ref.read(
-        coursesByReservationIdsProvider(reservationId).future,
+      return ref.read(
+        coursesByReservationIdsProvider(
+          reservations.map((e) => e.id).join(','),
+        ).future,
       );
-      print("test $test");
-      return test;
+    });
+
+final homeCoursesIdsProvider = FutureProvider.autoDispose
+    .family<List<HomeCourses>, String>((ref, userBadgeId) async {
+      final getHomeCoursesByIds = ref.read(getHomeCoursesByIdProvider);
+      return await getHomeCoursesByIds(userBadgeId);
     });

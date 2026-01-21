@@ -23,7 +23,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
   Widget _buildPage(
     Users user,
     Proms proms,
-    List<Courses> courses,
+    List<HomeCourses> courses,
     Campus campus,
   ) {
     return LayoutBuilder(
@@ -87,19 +87,20 @@ class _HomeViewState extends ConsumerState<HomeView> {
               final campusAsync = ref.watch(campusByIdProvider(proms.campusId));
               return campusAsync.when(
                 loading: () => const Center(
-                  child: CircularProgressIndicator(color: Colors.red),
+                  child: CircularProgressIndicator(color: Colors.blue),
                 ),
                 error: (e, _) => Center(child: Text("Erreur campus : $e")),
                 data: (campus) {
-                  final coursesAsync = ref.watch(
-                    userCoursesProvider(user.badgeId),
+                  final coursesDataAsync = ref.watch(
+                    homeCoursesIdsProvider(user.badgeId),
                   );
-                  return coursesAsync.when(
+                  return coursesDataAsync.when(
                     loading: () => const Center(
                       child: CircularProgressIndicator(color: Colors.green),
                     ),
                     error: (e, _) => Center(child: Text("Erreur cours : $e")),
-                    data: (courses) => _buildPage(user, proms, courses, campus),
+                    data: (coursesData) =>
+                        _buildPage(user, proms, coursesData, campus),
                   );
                 },
               );

@@ -76,6 +76,27 @@ class CourseRemoteDatasource {
     return await fetchCoursesForStudent(id);
   }
 
+  Future<List<Map<String, dynamic>>> fetchHomeCourseByUserId(String id) async {
+    return await Supabase.instance.client
+        .from('users_reserves')
+        .select('''
+        reservation (
+          id,
+          start,
+          ends,
+          courses (
+            course_name,
+            rooms!courses_room_id_fkey ( name ),
+            users!courses_instructor_fkey (
+              first_name,
+              last_name
+            )
+          )
+        )
+      ''')
+        .eq('user_id', id);
+  }
+
   Future<void> createCourse(
     String courseName,
     String instructor,

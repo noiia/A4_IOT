@@ -6,6 +6,8 @@ abstract class CourseRepository {
   Future<List<Courses>> getCoursesByIds(List<String> ids);
   Future<List<Courses>> getCoursesByReservationIds(List<String> ids);
 
+  Future<List<HomeCourses>> getHomeCoursesById(String id);
+
   Future<void> setCourses(
     String courseName,
     String instructor,
