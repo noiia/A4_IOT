@@ -38,6 +38,13 @@ final getReservationsByIdsProvider = Provider<GetReservationsByIds>((ref) {
   return GetReservationsByIds(ref.read(courseRepositoryProvider));
 });
 
+final getReservationsFromUsersReservesByUserIdProvider =
+    Provider<GetReservationsFromUsersReservesByUserId>((ref) {
+      return GetReservationsFromUsersReservesByUserId(
+        ref.read(courseRepositoryProvider),
+      );
+    });
+
 final createReservationsProvider = Provider<CreateReservations>((ref) {
   return CreateReservations(ref.read(courseRepositoryProvider));
 });
@@ -66,4 +73,15 @@ final reservationsByIdsProvider =
     ) async {
       final getReservationsByIds = ref.read(getReservationsByIdsProvider);
       return await getReservationsByIds(reservationsIds);
+    });
+
+final reservationsFromUsersReservesByUserIdProvider =
+    FutureProvider.family<List<Reservations>, String>((
+      ref,
+      reservationsIds,
+    ) async {
+      final getReservationsFromUsersReservesByUserId = ref.read(
+        getReservationsFromUsersReservesByUserIdProvider,
+      );
+      return await getReservationsFromUsersReservesByUserId(reservationsIds);
     });

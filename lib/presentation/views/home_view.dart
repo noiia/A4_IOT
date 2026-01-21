@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:a4_iot/domain/entities/campus.dart';
 import 'package:a4_iot/domain/entities/courses.dart';
@@ -10,10 +9,7 @@ import 'package:a4_iot/presentation/controllers/courses.dart';
 import 'package:a4_iot/presentation/controllers/users.dart';
 import 'package:a4_iot/presentation/controllers/proms.dart';
 import 'package:a4_iot/presentation/controllers/campus.dart';
-import 'package:a4_iot/presentation/controllers/reservations.dart';
-import 'package:a4_iot/presentation/views/login_view.dart';
 import 'package:a4_iot/presentation/widget/course_list.dart';
-import 'package:a4_iot/presentation/widget/fullscreen_button.dart';
 import 'package:a4_iot/presentation/widget/profile_card.dart';
 
 class HomeView extends ConsumerStatefulWidget {
@@ -24,26 +20,12 @@ class HomeView extends ConsumerStatefulWidget {
 }
 
 class _HomeViewState extends ConsumerState<HomeView> {
-  Future<void> _logout(BuildContext context) async {
-    await Supabase.instance.client.auth.signOut();
-
-    if (context.mounted) {
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => const LoginView()),
-        (_) => false,
-      );
-    }
-  }
-
   Widget _buildPage(
     Users user,
     Proms proms,
-    List<Courses> courses,
+    List<HomeCourses> courses,
     Campus campus,
   ) {
-    print(
-      'user ${user.firstName}, proms ${proms.name}, courses ${courses.length}, campus ${campus.name}',
-    );
     return LayoutBuilder(
       builder: (context, constraints) {
         return SingleChildScrollView(
@@ -79,8 +61,6 @@ class _HomeViewState extends ConsumerState<HomeView> {
                           )
                         : CourseList(courses: courses),
                   ),
-                  const SizedBox(height: 36),
-                  FullScreenButton(name: 'Se déconnecter', function: _logout),
                 ],
               ),
             ),
@@ -106,42 +86,21 @@ class _HomeViewState extends ConsumerState<HomeView> {
             data: (proms) {
               final campusAsync = ref.watch(campusByIdProvider(proms.campusId));
               return campusAsync.when(
-                loading: () => const Center(child: CircularProgressIndicator()),
+                loading: () => const Center(
+                  child: CircularProgressIndicator(color: Colors.blue),
+                ),
                 error: (e, _) => Center(child: Text("Erreur campus : $e")),
                 data: (campus) {
-                  final test = reservationsByIdProvider(user.id);
-                  final reservationsAsync = ref.watch(test);
-                  return reservationsAsync.when(
+                  final coursesDataAsync = ref.watch(
+                    homeCoursesIdsProvider(user.badgeId),
+                  );
+                  return coursesDataAsync.when(
                     loading: () => const Center(
-                      child: CircularProgressIndicator(color: Colors.blue),
+                      child: CircularProgressIndicator(color: Colors.green),
                     ),
-                    error: (e, _) =>
-                        Center(child: Text("Erreur reservation : $e")),
-                    data: (reservations) {
-                      if (reservations.isNotEmpty) {
-                        print("Reservations: $reservations");
-                        final test = reservations.map((e) => e.id).toList();
-                        print("Reservations IDs: $test");
-                        final coursesAsync = ref.watch(
-                          coursesByReservationIdsProvider(
-                            reservations.map((e) => e.id).toList(),
-                          ),
-                        );
-                        return coursesAsync.when(
-                          loading: () => const Center(
-                            child: CircularProgressIndicator(
-                              color: Colors.green,
-                            ),
-                          ),
-                          error: (e, _) =>
-                              Center(child: Text("Erreur cours : $e")),
-                          data: (courses) =>
-                              _buildPage(user, proms, courses, campus),
-                        );
-                      } else {
-                        return _buildPage(user, proms, [], campus);
-                      }
-                    },
+                    error: (e, _) => Center(child: Text("Erreur cours : $e")),
+                    data: (coursesData) =>
+                        _buildPage(user, proms, coursesData, campus),
                   );
                 },
               );

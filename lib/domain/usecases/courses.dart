@@ -41,6 +41,16 @@ class GetCoursesByReservationIds {
   }
 }
 
+class GetHomeCoursesByIds {
+  final CourseRepository repository;
+
+  GetHomeCoursesByIds(this.repository);
+
+  Future<List<HomeCourses>> call(String id) {
+    return repository.getHomeCoursesById(id);
+  }
+}
+
 class CreateCourses {
   final CourseRepository repository;
 

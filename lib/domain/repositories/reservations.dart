@@ -4,6 +4,9 @@ abstract class ReservationsRepository {
   Future<List<Reservations>> getReservations();
   Future<List<Reservations>> getReservationsById(String id);
   Future<List<Reservations>> getReservationsByIds(List<String> ids);
+  Future<List<Reservations>> getReservationsFromUsersReservesByUserId(
+    String id,
+  );
 
   Future<void> setReservations(
     String usersReserves,

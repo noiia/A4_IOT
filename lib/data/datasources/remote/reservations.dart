@@ -10,9 +10,7 @@ class ReservationsRemoteDatasource {
   }
 
   Future<List<Map<String, dynamic>>> fetchReservationsById(String id) async {
-    final test = await client.from('reservation').select().eq('id', id);
-    print(test);
-    return test;
+    return await client.from('reservation').select().eq('id', id);
   }
 
   Future<List<Map<String, dynamic>>> fetchReservationsByIds(
@@ -25,9 +23,9 @@ class ReservationsRemoteDatasource {
     String id,
   ) async {
     return await Supabase.instance.client
-        .from('reservation')
-        .select('*, users_reserves!inner(user_id)')
-        .eq('users_reserves.user_id', id);
+        .from('users_reserves')
+        .select('reservation(*)')
+        .eq('user_id', id);
   }
 
   Future<void> createReservation(

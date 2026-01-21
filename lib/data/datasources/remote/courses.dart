@@ -17,13 +17,16 @@ class CourseRemoteDatasource {
     if (ids.isEmpty) {
       return [];
     }
-    return await client.from('courses').select().eq('id', ids);
+    return await client.from('courses').select().filter('id', 'in', ids);
   }
 
   Future<List<Map<String, dynamic>>> fetchCoursesByReservationIds(
     List<String> ids,
   ) async {
-    return await client.from('courses').select().eq('reservation_id', ids);
+    return await client
+        .from('courses')
+        .select()
+        .filter('reservation_id', 'in', ids);
   }
 
   Future<List<Map<String, dynamic>>> fetchCoursesByInstructor(String id) async {
@@ -71,6 +74,27 @@ class CourseRemoteDatasource {
     }
 
     return await fetchCoursesForStudent(id);
+  }
+
+  Future<List<Map<String, dynamic>>> fetchHomeCourseByUserId(String id) async {
+    return await Supabase.instance.client
+        .from('users_reserves')
+        .select('''
+        reservation (
+          id,
+          start,
+          ends,
+          courses (
+            course_name,
+            rooms!courses_room_id_fkey ( name ),
+            users!courses_instructor_fkey (
+              first_name,
+              last_name
+            )
+          )
+        )
+      ''')
+        .eq('user_id', id);
   }
 
   Future<void> createCourse(

@@ -41,6 +41,26 @@ class CourseRepositoryImpl implements CourseRepository {
     return remoteData.map((e) => CoursesModel.fromMap(e)).toList();
   }
 
+  @override
+  Future<List<HomeCourses>> getHomeCoursesById(String id) async {
+    final remoteData = await remote.fetchHomeCourseByUserId(id);
+
+    final List<HomeCourses> result = [];
+
+    for (final row in remoteData) {
+      final reservation = row['reservation'] as Map<String, dynamic>;
+      final courses = reservation['courses'] as List<dynamic>;
+
+      for (final course in courses) {
+        result.add(
+          HomeCoursesModel.fromMap(reservation, course as Map<String, dynamic>),
+        );
+      }
+    }
+
+    return result;
+  }
+
   Future<List<Courses>> getCoursesByUsersId(String id) async {
     try {
       final remoteData = await remote.fetchUsersCourses(id);

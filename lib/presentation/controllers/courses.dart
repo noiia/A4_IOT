@@ -6,6 +6,7 @@ import 'package:a4_iot/domain/entities/courses.dart';
 import 'package:a4_iot/data/datasources/local/courses.dart';
 import 'package:a4_iot/data/datasources/remote/courses.dart';
 import 'package:a4_iot/data/repositories/courses_impl.dart';
+import 'package:a4_iot/presentation/controllers/reservations.dart';
 
 final supabaseProvider = Provider<SupabaseClient>((ref) {
   return Supabase.instance.client;
@@ -44,6 +45,10 @@ final getCoursesByReservationIdsProvider = Provider<GetCoursesByReservationIds>(
   },
 );
 
+final getHomeCoursesByIdProvider = Provider<GetHomeCoursesByIds>((ref) {
+  return GetHomeCoursesByIds(ref.read(courseRepositoryProvider));
+});
+
 final createCourseProvider = Provider<CreateCourses>((ref) {
   return CreateCourses(ref.read(courseRepositoryProvider));
 });
@@ -65,10 +70,31 @@ final coursesByIdsProvider = FutureProvider.family<List<Courses>, List<String>>(
 );
 
 final coursesByReservationIdsProvider =
-    FutureProvider.family<List<Courses>, List<String>>((ref, userId) async {
+    FutureProvider.family<List<Courses>, String>((ref, userId) async {
       final getCoursesByReservationIds = ref.read(
         getCoursesByReservationIdsProvider,
       );
+      final ids = userId.split(',');
+      return getCoursesByReservationIds(ids);
+    });
 
-      return getCoursesByReservationIds(userId);
+final userCoursesProvider = FutureProvider.autoDispose
+    .family<List<Courses>, String>((ref, userBadgeId) async {
+      final reservations = await ref.read(
+        reservationsFromUsersReservesByUserIdProvider(userBadgeId).future,
+      );
+
+      if (reservations.isEmpty) return [];
+
+      return ref.read(
+        coursesByReservationIdsProvider(
+          reservations.map((e) => e.id).join(','),
+        ).future,
+      );
+    });
+
+final homeCoursesIdsProvider = FutureProvider.autoDispose
+    .family<List<HomeCourses>, String>((ref, userBadgeId) async {
+      final getHomeCoursesByIds = ref.read(getHomeCoursesByIdProvider);
+      return await getHomeCoursesByIds(userBadgeId);
     });
