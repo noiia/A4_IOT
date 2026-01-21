@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:a4_iot/domain/entities/courses.dart';
+import 'package:intl/intl.dart';
 
 class CourseList extends StatelessWidget {
   final List<HomeCourses> courses;
@@ -16,8 +17,9 @@ class CourseList extends StatelessWidget {
           final course = courses[index];
           return ListTile(
             title: Text(course.courseName),
+
             subtitle: Text(
-              '${course.room} - ${course.instructor} - ${course.reservationStart} à ${course.reservationEnd}',
+              '${course.room} - ${course.instructor} - ${DateFormat('yyyy-MM-dd HH:mm').format(course.reservationStart)}, à ${DateFormat('yyyy-MM-dd HH:mm').format(course.reservationEnd)}',
             ),
           );
         },
