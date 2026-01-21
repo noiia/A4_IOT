@@ -11,6 +11,15 @@ final supabaseProvider = Provider<SupabaseClient>((ref) {
   return Supabase.instance.client;
 });
 
+final authStateProvider = StreamProvider<AuthState>((ref) {
+  return Supabase.instance.client.auth.onAuthStateChange;
+});
+
+final currentUserProvider = Provider<User?>((ref) {
+  final auth = ref.watch(authStateProvider).value;
+  return auth?.session?.user;
+});
+
 final userRemoteProvider = Provider<UsersRemoteDatasource>((ref) {
   return UsersRemoteDatasource(ref.read(supabaseProvider));
 });
@@ -51,10 +60,14 @@ final deleteUsersProvider = Provider<DeleteUsers>((ref) {
 });
 
 final usersProvider = FutureProvider<Users>((ref) async {
-  final userId = Supabase.instance.client.auth.currentUser!.id;
-  final getUsersByAuthUserId = ref.read(getUsersByAuthUserIdProvider);
+  final user = ref.watch(currentUserProvider);
 
-  return getUsersByAuthUserId(userId);
+  if (user == null) {
+    throw Exception("User not authenticated");
+  }
+
+  final getUsersByAuthUserId = ref.read(getUsersByAuthUserIdProvider);
+  return getUsersByAuthUserId(user.id);
 });
 
 final allUsersProvider = FutureProvider<List<Users>>((ref) async {

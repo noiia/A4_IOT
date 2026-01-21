@@ -1,22 +1,26 @@
-import 'package:a4_iot/presentation/views/prom_view.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:a4_iot/presentation/controllers/users.dart';
 import 'package:a4_iot/presentation/views/home_view.dart';
 import 'package:a4_iot/presentation/views/login_view.dart';
+import 'package:a4_iot/presentation/views/prom_view.dart';
 
-class MainLayout extends StatefulWidget {
+class MainLayout extends ConsumerStatefulWidget {
   const MainLayout({super.key});
 
   @override
-  State<MainLayout> createState() => _MainLayoutState();
+  ConsumerState<MainLayout> createState() => _MainLayoutState();
 }
 
-class _MainLayoutState extends State<MainLayout> {
+class _MainLayoutState extends ConsumerState<MainLayout> {
   int _currentIndex = 0;
 
   Future<void> _logout(BuildContext context) async {
     await Supabase.instance.client.auth.signOut();
+
+    ref.invalidate(usersProvider);
 
     if (context.mounted) {
       Navigator.of(context).pushAndRemoveUntil(
@@ -27,7 +31,6 @@ class _MainLayoutState extends State<MainLayout> {
   }
 
   final List<Widget> _pages = const [HomeView(), PromsPageView()];
-  // final List<Widget> _pages = const [HomeView(), PromsView()];
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +41,6 @@ class _MainLayoutState extends State<MainLayout> {
         currentIndex: _currentIndex,
         onTap: (index) async {
           if (index == 2) {
-            // Pop-up de confirmation avant logout
             final shouldLogout = await showDialog<bool>(
               context: context,
               builder: (context) => AlertDialog(
@@ -48,15 +50,11 @@ class _MainLayoutState extends State<MainLayout> {
                 ),
                 actions: [
                   TextButton(
-                    onPressed: () => Navigator.of(
-                      context,
-                    ).pop(false), // Ne pas se déconnecter
+                    onPressed: () => Navigator.pop(context, false),
                     child: const Text('Annuler'),
                   ),
                   TextButton(
-                    onPressed: () => Navigator.of(
-                      context,
-                    ).pop(true), // Confirmer la déconnexion
+                    onPressed: () => Navigator.pop(context, true),
                     child: const Text('Se déconnecter'),
                   ),
                 ],
@@ -70,7 +68,6 @@ class _MainLayoutState extends State<MainLayout> {
             setState(() => _currentIndex = index);
           }
         },
-
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profil"),
           BottomNavigationBarItem(icon: Icon(Icons.list), label: "Promo"),
