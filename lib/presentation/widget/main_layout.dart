@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 
 import 'package:a4_iot/presentation/controllers/users.dart';
 import 'package:a4_iot/presentation/views/home_view.dart';
@@ -12,6 +13,11 @@ class MainLayout extends ConsumerStatefulWidget {
 
   @override
   ConsumerState<MainLayout> createState() => _MainLayoutState();
+}
+
+Future<bool> hasInternet() async {
+  final connectivityResult = await Connectivity().checkConnectivity();
+  return connectivityResult != ConnectivityResult.none;
 }
 
 class _MainLayoutState extends ConsumerState<MainLayout> {

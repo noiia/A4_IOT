@@ -4,6 +4,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:a4_iot/core/config/env.dart';
+import 'package:a4_iot/data/datasources/local/users.dart';
 import 'package:a4_iot/presentation/views/login_view.dart';
 import 'package:a4_iot/presentation/widget/main_layout.dart';
 
@@ -29,22 +30,41 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class AuthGate extends StatelessWidget {
+class AuthGate extends StatefulWidget {
   const AuthGate({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return StreamBuilder<AuthState>(
-      stream: Supabase.instance.client.auth.onAuthStateChange,
-      builder: (context, snapshot) {
-        final session = snapshot.data?.session;
+  State<AuthGate> createState() => _AuthGateState();
+}
 
-        if (session != null) {
-          return const MainLayout();
-        } else {
-          return const LoginView();
-        }
-      },
-    );
+class _AuthGateState extends State<AuthGate> {
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _initSession();
+  }
+
+  Future<void> _initSession() async {
+    final supabaseSession = Supabase.instance.client.auth.currentSession;
+
+    if (supabaseSession == null) {
+      await restoreSession();
+    }
+
+    setState(() {
+      _loading = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_loading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    final session = Supabase.instance.client.auth.currentSession;
+    return session != null ? const MainLayout() : const LoginView();
   }
 }

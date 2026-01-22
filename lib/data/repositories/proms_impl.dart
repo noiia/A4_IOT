@@ -25,8 +25,19 @@ class PromsRepositoryImpl implements PromsRepository {
 
   @override
   Future<Proms> getPromById(String id) async {
-    final remoteData = await remote.fetchPromById(id);
-    return PromsModel.fromMap(remoteData);
+    try {
+      final remoteData = await remote
+          .fetchPromById(id)
+          .timeout(const Duration(seconds: 3));
+      await local.cacheUserProms(remoteData);
+
+      return PromsModel.fromMap(remoteData);
+    } catch (_) {
+      final localData = await local.getCachedUserProm();
+      return localData != null
+          ? PromsModel.fromMap(localData)
+          : throw Exception('No cached proms found');
+    }
   }
 
   @override

@@ -43,22 +43,39 @@ class CourseRepositoryImpl implements CourseRepository {
 
   @override
   Future<List<HomeCourses>> getHomeCoursesById(String id) async {
-    final remoteData = await remote.fetchHomeCourseByUserId(id);
+    try {
+      final remoteData = await remote
+          .fetchHomeCourseByUserId(id)
+          .timeout(const Duration(seconds: 5));
 
-    final List<HomeCourses> result = [];
+      final List<HomeCourses> result = [];
 
-    for (final row in remoteData) {
-      final reservation = row['reservation'] as Map<String, dynamic>;
-      final courses = reservation['courses'] as List<dynamic>;
+      for (final row in remoteData) {
+        final reservation = row['reservation'] as Map<String, dynamic>;
+        final courses = reservation['courses'] as List<dynamic>;
 
-      for (final course in courses) {
-        result.add(
-          HomeCoursesModel.fromMap(reservation, course as Map<String, dynamic>),
-        );
+        for (final course in courses) {
+          result.add(
+            HomeCoursesModel.fromMap(
+              reservation,
+              course as Map<String, dynamic>,
+            ),
+          );
+        }
       }
-    }
 
-    return result;
+      final test = result.map((e) => (e as HomeCoursesModel).toMap()).toList();
+      print("test cache courses: $test");
+      await local.cacheUserCourses(test);
+
+      return result;
+    } catch (_) {
+      final localData = await local.getCachedUserCourses();
+
+      return localData != null
+          ? localData.map((e) => HomeCoursesModel.fromCache(e)).toList()
+          : throw Exception('No cached courses found');
+    }
   }
 
   Future<List<Courses>> getCoursesByUsersId(String id) async {
