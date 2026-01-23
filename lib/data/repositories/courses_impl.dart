@@ -64,9 +64,9 @@ class CourseRepositoryImpl implements CourseRepository {
         }
       }
 
-      final test = result.map((e) => (e as HomeCoursesModel).toMap()).toList();
-      print("test cache courses: $test");
-      await local.cacheUserCourses(test);
+      await local.cacheUserCourses(
+        result.map((e) => (e as HomeCoursesModel).toMap()).toList(),
+      );
 
       return result;
     } catch (_) {
