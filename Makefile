@@ -6,3 +6,7 @@ launch-dev-chrome:
 launch-dev-linux:
 	flutter doctor
 	flutter run -d linux 
+
+launch-dev:
+	flutter doctor
+	flutter run 
