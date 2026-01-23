@@ -42,7 +42,6 @@ class AuthGate extends StatelessWidget {
         final session = snapshot.data?.session;
 
         if (session != null) {
-          // Wrap MainLayout with a widget that initializes/listens to BLE
           return const BleLifecycleWrapper(child: MainLayout());
         } else {
           return const LoginView();

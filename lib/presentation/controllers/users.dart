@@ -61,7 +61,6 @@ final deleteUsersProvider = Provider<DeleteUsers>((ref) {
 
 final usersProvider = FutureProvider<Users>((ref) async {
   final user = ref.watch(currentUserProvider);
-
   if (user == null) {
     throw Exception("User not authenticated");
   }

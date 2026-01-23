@@ -25,8 +25,19 @@ class CampusRepositoryImpl implements CampusRepository {
 
   @override
   Future<Campus> getCampusById(String id) async {
-    final remoteData = await remote.fetchCampusById(id);
-    return CampusModel.fromMap(remoteData);
+    try {
+      final remoteData = await remote
+          .fetchCampusById(id)
+          .timeout(const Duration(seconds: 3));
+      await local.cacheUserCampus(remoteData);
+
+      return CampusModel.fromMap(remoteData);
+    } catch (_) {
+      final localData = await local.getCachedUserCampus();
+      return localData != null
+          ? CampusModel.fromMap(localData)
+          : throw Exception('No cached campus found');
+    }
   }
 
   @override

@@ -81,7 +81,9 @@ class _HomeViewState extends ConsumerState<HomeView> {
         data: (user) {
           final promsAsync = ref.watch(promsByIdProvider(user.promsId));
           return promsAsync.when(
-            loading: () => const Center(child: CircularProgressIndicator()),
+            loading: () => const Center(
+              child: CircularProgressIndicator(color: Colors.red),
+            ),
             error: (e, _) => Center(child: Text("Erreur proms : $e")),
             data: (proms) {
               final campusAsync = ref.watch(campusByIdProvider(proms.campusId));

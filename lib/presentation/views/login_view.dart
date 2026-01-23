@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'package:a4_iot/presentation/widget/main_layout.dart';
+import 'package:a4_iot/data/datasources/local/users.dart';
+
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
 
@@ -21,10 +24,19 @@ class _LoginViewState extends State<LoginView> {
     });
 
     try {
-      await Supabase.instance.client.auth.signInWithPassword(
+      final response = await Supabase.instance.client.auth.signInWithPassword(
         email: _emailCtrl.text.trim(),
         password: _passwordCtrl.text.trim(),
       );
+
+      final refreshToken = response.session?.refreshToken;
+      if (refreshToken != null) {
+        await saveRefreshToken(refreshToken);
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const MainLayout()),
+        );
+      }
     } on AuthException catch (e) {
       _error = e.message;
     } catch (_) {

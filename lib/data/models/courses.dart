@@ -65,4 +65,15 @@ class HomeCoursesModel extends HomeCourses {
     "reservation_start": reservationStart,
     "reservation_end": reservationEnd,
   };
+
+  factory HomeCoursesModel.fromCache(Map<String, dynamic> coursesMap) {
+    return HomeCoursesModel(
+      id: coursesMap['id'],
+      courseName: coursesMap['course_name'] ?? 'Inconnu',
+      instructor: coursesMap['instructor'] ?? 'Inconnu',
+      room: coursesMap['rooms'] ?? 'Inconnu',
+      reservationStart: coursesMap['reservation_start'] ?? 'Inconnu',
+      reservationEnd: coursesMap['reservation_end'] ?? 'Inconnu',
+    );
+  }
 }
