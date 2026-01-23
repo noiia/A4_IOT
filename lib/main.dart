@@ -6,6 +6,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:a4_iot/core/config/env.dart';
 import 'package:a4_iot/presentation/views/login_view.dart';
 import 'package:a4_iot/presentation/widget/main_layout.dart';
+// Import your BLE utils
+import 'package:a4_iot/utils/ble_listening.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -40,11 +42,41 @@ class AuthGate extends StatelessWidget {
         final session = snapshot.data?.session;
 
         if (session != null) {
-          return const MainLayout();
+          // Wrap MainLayout with a widget that initializes/listens to BLE
+          return const BleLifecycleWrapper(child: MainLayout());
         } else {
           return const LoginView();
         }
       },
     );
+  }
+}
+
+class BleLifecycleWrapper extends ConsumerStatefulWidget {
+  final Widget child;
+  const BleLifecycleWrapper({super.key, required this.child});
+
+  @override
+  ConsumerState<BleLifecycleWrapper> createState() =>
+      _BleLifecycleWrapperState();
+}
+
+class _BleLifecycleWrapperState extends ConsumerState<BleLifecycleWrapper> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    ref.listen<bool>(isConnectedProvider, (previous, isConnected) {
+      if (isConnected) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text("Door Lock Connected!")));
+      }
+    });
+
+    return widget.child;
   }
 }

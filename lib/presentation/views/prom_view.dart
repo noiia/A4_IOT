@@ -154,8 +154,9 @@ class _PromsPageViewState extends ConsumerState<PromsPageView> {
                     itemBuilder: (context, index) {
                       final s = students[index];
                       // Filtrage visuel : n'afficher que les étudiants (pas les profs s'ils ont cet ID)
-                      if (s.status == 'teacher' || s.status == 'admin')
+                      if (s.status == 'teacher' || s.status == 'admin') {
                         return const SizedBox.shrink();
+                      }
 
                       return StudentRowItem(
                         firstName: s.firstName,
