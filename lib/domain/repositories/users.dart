@@ -4,6 +4,7 @@ abstract class UsersRepository {
   Future<List<Users>> getUsers();
   Future<Users> getUsersByAuthUserId(String id);
   Future<Users> getUsersByBadgeId(String id);
+  Future<HomeUsers> getHomeUsersByAuthUserId(String id);
 
   Future<void> setUsers(
     String firstName,

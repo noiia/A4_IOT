@@ -6,6 +6,7 @@ class ProfileCard extends StatelessWidget {
   final String status;
   final String proms;
   final String campus;
+  final String lastPointing;
   final String avatarUrl;
 
   const ProfileCard({
@@ -15,6 +16,7 @@ class ProfileCard extends StatelessWidget {
     required this.status,
     required this.proms,
     required this.campus,
+    required this.lastPointing,
     required this.avatarUrl,
   });
 
@@ -36,7 +38,7 @@ class ProfileCard extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              status,
+              "$status - $lastPointing",
               style: Theme.of(
                 context,
               ).textTheme.bodyMedium?.copyWith(color: Colors.grey),

@@ -41,6 +41,27 @@ class UsersRepositoryImpl implements UsersRepository {
   }
 
   @override
+  Future<HomeUsers> getHomeUsersByAuthUserId(String id) async {
+    try {
+      final remoteData = await remote
+          .fetchHomeUsersByAuthUserId(id)
+          .timeout(const Duration(seconds: 3));
+      if (remoteData != null && remoteData.isNotEmpty) {
+        await local.cacheUser(remoteData);
+        print(remoteData);
+        return HomeUsersModel.fromMap(remoteData);
+      } else {
+        throw Exception('No user data found');
+      }
+    } catch (_) {
+      final localData = await local.getCachedUser();
+      return localData != null
+          ? HomeUsersModel.fromMap(localData)
+          : throw Exception('No cached user found');
+    }
+  }
+
+  @override
   Future<Users> getUsersByBadgeId(String id) async {
     final remoteData = await remote.fetchUsersBadgeId(id);
     return UsersModel.fromMap(remoteData);

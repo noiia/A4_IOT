@@ -21,6 +21,16 @@ class GetUsersByAuthUserId {
   }
 }
 
+class GetHomeUsersByAuthUserId {
+  final UsersRepository repository;
+
+  GetHomeUsersByAuthUserId(this.repository);
+
+  Future<HomeUsers> call(String id) {
+    return repository.getHomeUsersByAuthUserId(id);
+  }
+}
+
 class GetUsersByBadgeId {
   final UsersRepository repository;
 
