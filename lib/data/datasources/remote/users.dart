@@ -17,6 +17,14 @@ class UsersRemoteDatasource {
     return await client.from('users').select().eq('badge_id', id).single();
   }
 
+  Future<Map<String, dynamic>?> fetchHomeUsersByAuthUserId(String id) async {
+    final res = await client
+        .rpc('get_home_user', params: {'uid': id})
+        .maybeSingle();
+
+    return res;
+  }
+
   Future<void> createUser(
     String firstName,
     String lastName,

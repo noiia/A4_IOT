@@ -17,12 +17,12 @@ class UsersLocalDatasource {
 
   Future<void> cacheUser(Map<String, dynamic> user) async {
     final box = await Hive.openBox(boxName);
-    await box.put("user", user);
+    await box.put("currentUser", user);
   }
 
   Future<Map<String, dynamic>?> getCachedUser() async {
     final box = await Hive.openBox(boxName);
-    final data = box.get("user");
+    final data = box.get("currentUser");
     if (data == null) return null;
 
     return Map<String, dynamic>.from(data);

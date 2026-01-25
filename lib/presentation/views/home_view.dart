@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:a4_iot/domain/entities/campus.dart';
 import 'package:a4_iot/domain/entities/courses.dart';
 import 'package:a4_iot/domain/entities/users.dart';
-import 'package:a4_iot/domain/entities/proms.dart';
 import 'package:a4_iot/presentation/controllers/courses.dart';
 import 'package:a4_iot/presentation/controllers/users.dart';
-import 'package:a4_iot/presentation/controllers/proms.dart';
-import 'package:a4_iot/presentation/controllers/campus.dart';
 import 'package:a4_iot/presentation/widget/course_list.dart';
 import 'package:a4_iot/presentation/widget/profile_card.dart';
 
@@ -20,12 +16,7 @@ class HomeView extends ConsumerStatefulWidget {
 }
 
 class _HomeViewState extends ConsumerState<HomeView> {
-  Widget _buildPage(
-    Users user,
-    Proms proms,
-    List<HomeCourses> courses,
-    Campus campus,
-  ) {
+  Widget _buildPage(HomeUsers currentUser, List<HomeCourses> courses) {
     return LayoutBuilder(
       builder: (context, constraints) {
         return SingleChildScrollView(
@@ -37,12 +28,15 @@ class _HomeViewState extends ConsumerState<HomeView> {
                   SizedBox(
                     width: 500,
                     child: ProfileCard(
-                      firstName: user.firstName,
-                      lastName: user.lastName,
-                      status: user.status,
-                      proms: proms.name,
-                      campus: campus.name,
-                      avatarUrl: user.avatarUrl,
+                      firstName: currentUser.firstName,
+                      lastName: currentUser.lastName,
+                      status: currentUser.status,
+                      lastPointing:
+                          currentUser.lastPointing?.toIso8601String() ??
+                          "Pas encore pointé",
+                      proms: currentUser.promsName,
+                      campus: currentUser.campusName,
+                      avatarUrl: currentUser.avatarUrl,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -72,41 +66,21 @@ class _HomeViewState extends ConsumerState<HomeView> {
 
   @override
   Widget build(BuildContext context) {
-    final userAsync = ref.watch(usersProvider);
-
+    final userAsync = ref.watch(homeUsersProvider);
     return Scaffold(
       body: userAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text("Erreur user : $e")),
-        data: (user) {
-          final promsAsync = ref.watch(promsByIdProvider(user.promsId));
-          return promsAsync.when(
+        data: (currentUser) {
+          final coursesDataAsync = ref.watch(
+            homeCoursesIdsProvider(currentUser.badgeId),
+          );
+          return coursesDataAsync.when(
             loading: () => const Center(
-              child: CircularProgressIndicator(color: Colors.red),
+              child: CircularProgressIndicator(color: Colors.green),
             ),
-            error: (e, _) => Center(child: Text("Erreur proms : $e")),
-            data: (proms) {
-              final campusAsync = ref.watch(campusByIdProvider(proms.campusId));
-              return campusAsync.when(
-                loading: () => const Center(
-                  child: CircularProgressIndicator(color: Colors.blue),
-                ),
-                error: (e, _) => Center(child: Text("Erreur campus : $e")),
-                data: (campus) {
-                  final coursesDataAsync = ref.watch(
-                    homeCoursesIdsProvider(user.badgeId),
-                  );
-                  return coursesDataAsync.when(
-                    loading: () => const Center(
-                      child: CircularProgressIndicator(color: Colors.green),
-                    ),
-                    error: (e, _) => Center(child: Text("Erreur cours : $e")),
-                    data: (coursesData) =>
-                        _buildPage(user, proms, coursesData, campus),
-                  );
-                },
-              );
-            },
+            error: (e, _) => Center(child: Text("Erreur cours : $e")),
+            data: (coursesData) => _buildPage(currentUser, coursesData),
           );
         },
       ),

@@ -43,6 +43,12 @@ final getUsersByAuthUserIdProvider = Provider<GetUsersByAuthUserId>((ref) {
   return GetUsersByAuthUserId(ref.read(userRepositoryProvider));
 });
 
+final getHomeUserByAuthUserIdProvider = Provider<GetHomeUsersByAuthUserId>((
+  ref,
+) {
+  return GetHomeUsersByAuthUserId(ref.read(userRepositoryProvider));
+});
+
 final getUsersByBadgeIdrovider = Provider<GetUsersByBadgeId>((ref) {
   return GetUsersByBadgeId(ref.read(userRepositoryProvider));
 });
@@ -67,6 +73,16 @@ final usersProvider = FutureProvider<Users>((ref) async {
 
   final getUsersByAuthUserId = ref.read(getUsersByAuthUserIdProvider);
   return getUsersByAuthUserId(user.id);
+});
+
+final homeUsersProvider = FutureProvider<HomeUsers>((ref) async {
+  final user = ref.watch(currentUserProvider);
+  if (user == null) {
+    throw Exception("User not authenticated");
+  }
+
+  final getHomeUsersByAuthId = ref.read(getHomeUserByAuthUserIdProvider);
+  return getHomeUsersByAuthId(user.id);
 });
 
 final allUsersProvider = FutureProvider<List<Users>>((ref) async {
