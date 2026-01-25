@@ -48,7 +48,6 @@ class UsersRepositoryImpl implements UsersRepository {
           .timeout(const Duration(seconds: 3));
       if (remoteData != null && remoteData.isNotEmpty) {
         await local.cacheUser(remoteData);
-        print(remoteData);
         return HomeUsersModel.fromMap(remoteData);
       } else {
         throw Exception('No user data found');
