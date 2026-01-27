@@ -137,7 +137,6 @@ class BleController {
 
       BluetoothCharacteristic? targetChar;
 
-      // Parcourir pour trouver la bonne caractéristique
       for (var service in services) {
         if (service.uuid.toString() == SERVICE_UUID) {
           for (var c in service.characteristics) {

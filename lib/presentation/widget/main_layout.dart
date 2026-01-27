@@ -3,7 +3,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 
-// --- IMPORTS EXISTANTS ---
 import 'package:a4_iot/presentation/controllers/users.dart';
 import 'package:a4_iot/presentation/views/home_view.dart';
 import 'package:a4_iot/presentation/views/login_view.dart';
@@ -29,7 +28,7 @@ class _MainLayoutState extends ConsumerState<MainLayout> {
   @override
   void initState() {
     super.initState();
-    // ⚡ Connexion automatique au démarrage
+    // Connexion automatique au démarrage
     WidgetsBinding.instance.addPostFrameCallback((_) {
       print("🏁 Initialisation : Recherche auto de 'MyDoorLock'...");
       ref.read(bleControllerProvider).startAutoConnect('MyDoorLock');
@@ -80,41 +79,57 @@ class _MainLayoutState extends ConsumerState<MainLayout> {
           // Les pages de l'application (Home / Proms)
           _pages[_currentIndex],
 
-          // BOUTON FLOTTANT "OUVRIR" (Visible uniquement si connecté)
-          if (isConnected)
-            Positioned(
-              bottom: 20,
-              right: 20,
-              child: FloatingActionButton.extended(
-                heroTag:
-                    "ble_unlock_fab", // Tag unique pour éviter les conflits d'animation
-                onPressed: () async {
-                  // Appel de la commande 'open'
+          // BOUTON FLOTTANT ADAPTATIF
+          Positioned(
+            bottom: 20,
+            right: 20,
+            child: FloatingActionButton.extended(
+              heroTag: "ble_action_fab",
+              // LOGIQUE D'APPUI : Se Connecter OU Ouvrir
+              onPressed: () async {
+                if (isConnected) {
+                  // --- CAS 1: DÉJÀ CONNECTÉ -> OUVRIR ---
                   await controller.sendOpenCommand();
-
-                  // Feedback tactile et visuel
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                        content: Text("🚀 Commande d'ouverture envoyée !"),
+                        content: Text("Ouverture..."),
                         duration: Duration(seconds: 2),
                         backgroundColor: Colors.green,
                       ),
                     );
                   }
-                },
-                backgroundColor: Colors.orange,
-                icon: const Icon(Icons.lock_open, size: 28),
-                label: const Text(
-                  "OUVRIR PORTE",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1,
-                  ),
-                ),
-                elevation: 6,
+                } else {
+                  // --- CAS 2: DÉCONNECTÉ -> LANCER SCAN ---
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("Recherche de la porte..."),
+                        duration: Duration(seconds: 1),
+                      ),
+                    );
+                  }
+                  controller.startAutoConnect('MyDoorLock');
+                }
+              },
+              // COULEUR : Orange (Ouvrir) ou Bleu (Connecter)
+              backgroundColor: isConnected ? Colors.orange : Colors.blueAccent,
+              // ICÔNE : Cadenas ouvert ou Bluetooth
+              icon: Icon(
+                isConnected ? Icons.lock_open : Icons.bluetooth_searching,
+                size: 28,
               ),
+              // TEXTE : OUVRIR ou CONNECTER
+              label: Text(
+                isConnected ? "OUVRIR PORTE" : "CONNECTER",
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1,
+                ),
+              ),
+              elevation: 6,
             ),
+          ),
         ],
       ),
 
