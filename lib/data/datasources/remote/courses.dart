@@ -30,22 +30,10 @@ class CourseRemoteDatasource {
   }
 
   Future<List<Map<String, dynamic>>> fetchCoursesByInstructor(String id) async {
-    final res = await client
-        .from('courses')
-        .select('''
-        *,
-        instructor:users!courses_instructor_fkey (
-          badge_id,
-          first_name,
-          last_name,
-          status,
-          avatar_url,
-          auth_user_id
-        ),
-        room:rooms (*),
-        reservation:reservations (*)
-      ''')
-        .eq('instructor.auth_user_id', id);
+    final res = await client.rpc(
+      'get_today_courses_by_instructor',
+      params: {'p_instructor_id': id},
+    );
 
     return List<Map<String, dynamic>>.from(res);
   }
@@ -77,24 +65,12 @@ class CourseRemoteDatasource {
   }
 
   Future<List<Map<String, dynamic>>> fetchHomeCourseByUserId(String id) async {
-    return await Supabase.instance.client
-        .from('users_reserves')
-        .select('''
-        reservation (
-          id,
-          start,
-          ends,
-          courses (
-            course_name,
-            rooms!courses_room_id_fkey ( name ),
-            users!courses_instructor_fkey (
-              first_name,
-              last_name
-            )
-          )
-        )
-      ''')
-        .eq('user_id', id);
+    final res = await Supabase.instance.client.rpc(
+      'get_today_reservations_by_user',
+      params: {'p_user_id': id},
+    );
+
+    return List<Map<String, dynamic>>.from(res);
   }
 
   Future<void> createCourse(

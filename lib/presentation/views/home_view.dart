@@ -25,6 +25,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
             child: Center(
               child: Column(
                 children: [
+                  const SizedBox(height: 16),
                   SizedBox(
                     width: 500,
                     child: ProfileCard(
@@ -42,7 +43,6 @@ class _HomeViewState extends ConsumerState<HomeView> {
                   const SizedBox(height: 16),
                   SizedBox(
                     width: 500,
-                    height: 450,
                     child: courses.isEmpty
                         ? const Center(
                             child: Text(
