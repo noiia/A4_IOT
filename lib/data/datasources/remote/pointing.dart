@@ -34,7 +34,10 @@ class PointingRemoteDatasource {
         .eq('user_badge_id', userBadgeId);
   }
 
-  Future<void> createPointing(String userBadgeId) async {
-    return await client.from('pointing').insert({'user_badge_id': userBadgeId});
+  Future<void> createPointing(String userBadgeId, DateTime dateTime) async {
+    return await client.from('pointing').insert({
+      'user_badge_id': userBadgeId,
+      'Date': dateTime,
+    });
   }
 }

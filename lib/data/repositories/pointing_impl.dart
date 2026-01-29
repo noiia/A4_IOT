@@ -59,7 +59,15 @@ class PointingRepositoryImpl implements PointingRepository {
   }
 
   @override
-  Future<void> setPointing(String userBadgeId) async {
-    await remote.createPointing(userBadgeId);
+  Future<void> setPointing(String userBadgeId, DateTime dateTime) async {
+    //Datetime without seconds
+    final date = DateTime(
+      dateTime.year,
+      dateTime.month,
+      dateTime.day,
+      dateTime.hour,
+      dateTime.minute,
+    );
+    await remote.createPointing(userBadgeId, date);
   }
 }

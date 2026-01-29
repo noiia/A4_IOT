@@ -6,5 +6,5 @@ abstract class PointingRepository {
   Future<List<Pointing>> getPointings();
   Future<List<Pointing>> getPointingsByUserBadgeId(String userBadgeId);
 
-  Future<void> setPointing(String userBadgeId);
+  Future<void> setPointing(String userBadgeId, DateTime dateTime);
 }

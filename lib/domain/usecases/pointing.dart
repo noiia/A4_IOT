@@ -47,6 +47,9 @@ class CreatePointing {
   CreatePointing(this.repository);
 
   Future<void> call({required String userBadgeId}) {
-    return repository.setPointing(userBadgeId);
+    return repository.setPointing(
+      userBadgeId,
+      DateTime.now(),
+    ); //datetime format h:mm dd/mm/yyyy;
   }
 }
