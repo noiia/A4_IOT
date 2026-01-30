@@ -67,7 +67,7 @@ class _MainLayoutState extends ConsumerState<MainLayout> {
                   Text("Porte Connectée", style: TextStyle(fontSize: 16)),
                 ],
               ),
-              backgroundColor: Colors.greenAccent.withOpacity(0.8),
+              backgroundColor: Colors.greenAccent,
               centerTitle: true,
               toolbarHeight: 40,
               automaticallyImplyLeading: false, // Pas de flèche retour

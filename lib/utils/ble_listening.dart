@@ -6,6 +6,9 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
+import 'package:a4_iot/presentation/widget/emergency_compass.dart';
 
 const String SERVICE_UUID = "12345678-1234-1234-1234-123456789012";
 const String CHARACTERISTIC_UUID = "87654321-4321-4321-4321-210987654321";
@@ -160,5 +163,104 @@ class BleController {
     } catch (e) {
       print("Erreur envoi: $e");
     }
+  }
+}
+
+class BleListeningService {
+  static final BleListeningService _instance = BleListeningService._internal();
+  factory BleListeningService() => _instance;
+  BleListeningService._internal();
+
+  final FlutterLocalNotificationsPlugin _notifications =
+      FlutterLocalNotificationsPlugin();
+
+  bool _alreadyDetected = false;
+
+  final Guid portalServiceUuid = Guid("12345678-1234-1234-1234-1234567890ab");
+
+  void Function(double angle)? onAngleChanged;
+
+  Future<void> init() async {
+    await _initPermissions();
+    await _initNotifications();
+  }
+
+  Future<void> _initPermissions() async {
+    await [
+      Permission.bluetoothScan,
+      Permission.bluetoothConnect,
+      Permission.location,
+      Permission.notification,
+    ].request();
+  }
+
+  Future<void> _initNotifications() async {
+    const android = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const ios = DarwinInitializationSettings();
+
+    const settings = InitializationSettings(android: android, iOS: ios);
+
+    await _notifications.initialize(
+      settings: settings,
+      onDidReceiveNotificationResponse: (NotificationResponse response) {
+        print("Notification cliquée !");
+      },
+    );
+  }
+
+  void startScan() {
+    FlutterBluePlus.scanResults.listen(_onScanResults);
+
+    print("scan started");
+
+    FlutterBluePlus.startScan(
+      withServices: [portalServiceUuid],
+      timeout: const Duration(seconds: 10),
+      androidUsesFineLocation: true,
+    );
+  }
+
+  void _onScanResults(List<ScanResult> results) {
+    int? strongestRssi;
+    bool found = false;
+
+    for (final r in results) {
+      print("tetito");
+      if (r.device.platformName == "ISSUE_SECOURS") {
+        found = true;
+        if (strongestRssi == null || r.rssi > strongestRssi) {
+          strongestRssi = r.rssi;
+        }
+      }
+    }
+
+    if (strongestRssi != null && onAngleChanged != null) {
+      double newAngle = rssiToAngle(strongestRssi, -80, -40);
+      onAngleChanged!(newAngle);
+    }
+
+    if (found && !_alreadyDetected) {
+      _alreadyDetected = true;
+      _showPortalNotification();
+    }
+  }
+
+  Future<void> _showPortalNotification() async {
+    const androidDetails = AndroidNotificationDetails(
+      'portal_channel',
+      'Portail BLE',
+      channelDescription: 'Notification portail BLE',
+      importance: Importance.max,
+      priority: Priority.high,
+    );
+
+    const details = NotificationDetails(android: androidDetails);
+
+    await _notifications.show(
+      id: 0,
+      title: "Portail détecté",
+      body: "Touchez pour ouvrir l'application",
+      notificationDetails: details,
+    );
   }
 }
