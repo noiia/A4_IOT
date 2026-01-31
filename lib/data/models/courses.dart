@@ -41,19 +41,18 @@ class HomeCoursesModel extends HomeCourses {
     required super.reservationEnd,
   });
 
-  factory HomeCoursesModel.fromMap(
-    Map<String, dynamic> reservationMap,
-    Map<String, dynamic> coursesMap,
-  ) {
+  factory HomeCoursesModel.fromMap(Map<String, dynamic> coursesMap) {
     return HomeCoursesModel(
-      id: reservationMap['id'],
+      id: coursesMap['reservation_id'],
       courseName: coursesMap['course_name'] ?? 'Inconnu',
-      instructor: coursesMap['users'] != null
-          ? "${coursesMap['users']['first_name']} ${coursesMap['users']['last_name']}"
+      instructor:
+          coursesMap['instructor_first_name'] != null &&
+              coursesMap['instructor_last_name'] != null
+          ? "${coursesMap['instructor_first_name']} ${coursesMap['instructor_last_name']}"
           : 'Inconnu',
-      room: coursesMap['rooms']?['name'] ?? 'Inconnu',
-      reservationStart: DateTime.parse(reservationMap['start'] as String),
-      reservationEnd: DateTime.parse(reservationMap['ends'] as String),
+      room: coursesMap['room_name'] ?? 'Inconnu',
+      reservationStart: DateTime.parse(coursesMap['start'] as String),
+      reservationEnd: DateTime.parse(coursesMap['ends'] as String),
     );
   }
 
