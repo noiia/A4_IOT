@@ -1,19 +1,22 @@
 // ignore_for_file: constant_identifier_names
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
+
+import 'package:a4_iot/presentation/controllers/users.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
+import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-const String SERVICE_UUID = "12345678-1234-1234-1234-123456789012";
-const String CHARACTERISTIC_UUID = "87654321-4321-4321-4321-210987654321";
-// --- STATE PROVIDERS ---
+const String SERVICE_UUID = "12345678-1234-1234-1234-1234567890ab";
+const String CHARACTERISTIC_UUID = "abcd1234-1234-1234-1234-abcdefabcdef";
+
 final isConnectedProvider = StateProvider<bool>((ref) => false);
 final connectedDeviceProvider = StateProvider<BluetoothDevice?>((ref) => null);
 
-// --- CONTROLLER ---
 final bleControllerProvider = Provider<BleController>((ref) {
   return BleController(ref);
 });
@@ -25,16 +28,13 @@ class BleController {
 
   BleController(this.ref);
 
-  /// Tente de trouver et connecter automatiquement "MyDoorLock"
   Future<void> startAutoConnect(String targetName) async {
-    // 1. Permissions
     bool permsGranted = await _requestPermissions();
     if (!permsGranted) {
-      print(" Permissions manquantes pour le BLE");
+      print("Permissions manquantes pour le BLE");
       return;
     }
 
-    // Si déjà connecté, on ne fait rien
     if (ref.read(isConnectedProvider)) {
       print("Déjà connecté");
       return;
@@ -43,26 +43,23 @@ class BleController {
     print("Recherche automatique de '$targetName'...");
 
     _scanSubscription = FlutterBluePlus.scanResults.listen((results) async {
-      // Cherche l'appareil cible dans les résultats
       for (ScanResult r in results) {
         if (r.device.platformName == targetName) {
           print(
-            " Cible trouvée: ${r.device.platformName} (${r.device.remoteId})",
+            "Cible trouvée: ${r.device.platformName} (${r.device.remoteId})",
           );
 
           await stopScan();
 
-          // Lancer la connexion
           await connectToDevice(r.device);
-          break; // Sortir de la boucle
+          break;
         }
       }
     });
 
-    // 3. Démarrer le scan (avec filtre sur le nom pour optimiser)
     try {
       await FlutterBluePlus.startScan(
-        withNames: [targetName], // Filtre natif si possible
+        withNames: [targetName],
         timeout: const Duration(seconds: 15),
       );
     } catch (e) {
@@ -71,14 +68,22 @@ class BleController {
   }
 
   Future<void> stopScan() async {
-    await FlutterBluePlus.stopScan();
-    await _scanSubscription?.cancel();
+    try {
+      await FlutterBluePlus.stopScan();
+      await _scanSubscription?.cancel();
+    } catch (e) {
+      print("Erreur lors de l'arrêt du scan: $e");
+    }
   }
 
   Future<void> connectToDevice(BluetoothDevice device) async {
     try {
-      print(" Tentative de connexion...");
-      // autoConnect: true permet la reconnexion auto si le lien coupe (Android)
+      print("Tentative de connexion...");
+
+      await stopScan();
+
+      await Future.delayed(const Duration(milliseconds: 200));
+
       await device.connect(
         autoConnect: false,
         timeout: const Duration(seconds: 10),
@@ -86,7 +91,7 @@ class BleController {
 
       ref.read(isConnectedProvider.notifier).state = true;
       ref.read(connectedDeviceProvider.notifier).state = device;
-      print(" CONNECTÉ à ${device.platformName} !");
+      print("CONNECTÉ à ${device.platformName} !");
 
       _connectionSubscription = device.connectionState.listen((state) {
         if (state == BluetoothConnectionState.disconnected) {
@@ -96,8 +101,12 @@ class BleController {
         }
       });
     } catch (e) {
-      print(" Échec connexion: $e");
+      print("Échec connexion: $e");
       ref.read(isConnectedProvider.notifier).state = false;
+
+      try {
+        await device.disconnect();
+      } catch (_) {}
     }
   }
 
@@ -108,6 +117,7 @@ class BleController {
       await _connectionSubscription?.cancel();
       ref.read(isConnectedProvider.notifier).state = false;
       ref.read(connectedDeviceProvider.notifier).state = null;
+      print("Déconnecté manuellement");
     }
   }
 
@@ -125,22 +135,25 @@ class BleController {
 
   Future<void> sendOpenCommand() async {
     final device = ref.read(connectedDeviceProvider);
+    final user = ref.read(usersProvider).asData?.value;
     if (device == null) {
       print("Pas d'appareil connecté");
       return;
     }
 
     try {
-      print(" Recherche du service...");
-      // Découvrir les services
+      print("Recherche du service et de la caractéristique...");
+
       List<BluetoothService> services = await device.discoverServices();
 
       BluetoothCharacteristic? targetChar;
 
       for (var service in services) {
-        if (service.uuid.toString() == SERVICE_UUID) {
+        if (service.uuid.toString().toLowerCase() ==
+            SERVICE_UUID.toLowerCase()) {
           for (var c in service.characteristics) {
-            if (c.uuid.toString() == CHARACTERISTIC_UUID) {
+            if (c.uuid.toString().toLowerCase() ==
+                CHARACTERISTIC_UUID.toLowerCase()) {
               targetChar = c;
               break;
             }
@@ -149,16 +162,42 @@ class BleController {
       }
 
       if (targetChar != null) {
-        print("Envoi de 'open'...");
-        // Convertir String en bytes UTF-8
-        List<int> bytes = "open".codeUnits;
-        await targetChar.write(bytes);
-        print("Commande envoyée !");
+        print("Préparation de la commande JSON...");
+        print("User badge ID: ${user?.badgeId}");
+        DateTime now = DateTime.now();
+        String formattedDate = DateFormat(
+          'yyyy-MM-dd\'T\'HH:mm:00',
+        ).format(now);
+
+        Map<String, dynamic> command = {
+          "action": "open",
+          "badge_id": user?.badgeId,
+          "timestamp": formattedDate,
+        };
+
+        String jsonString = jsonEncode(command);
+        print("Envoi: $jsonString");
+
+        List<int> bytes = utf8.encode(jsonString);
+
+        await targetChar.write(bytes, withoutResponse: false);
+
+        print("Commande envoyée avec succès !");
       } else {
-        print("Caractéristique introuvable (Vérifie les UUIDs)");
+        print("Caractéristique introuvable. Vérifie les UUIDs dans l'Arduino.");
+        print("Attendu Service: $SERVICE_UUID");
+        print("Attendu Char: $CHARACTERISTIC_UUID");
+
+        print("Services trouvés:");
+        for (var s in services) {
+          print("- Service: ${s.uuid}");
+          for (var c in s.characteristics) {
+            print("  - Char: ${c.uuid}");
+          }
+        }
       }
     } catch (e) {
-      print("Erreur envoi: $e");
+      print("Erreur lors de l'envoi: $e");
     }
   }
 }

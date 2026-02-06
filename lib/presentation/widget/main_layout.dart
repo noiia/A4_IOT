@@ -28,7 +28,7 @@ class _MainLayoutState extends ConsumerState<MainLayout> {
   @override
   void initState() {
     super.initState();
-    // Connexion automatique au démarrage
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       print("🏁 Initialisation : Recherche auto de 'MyDoorLock'...");
       ref.read(bleControllerProvider).startAutoConnect('MyDoorLock');
@@ -36,7 +36,6 @@ class _MainLayoutState extends ConsumerState<MainLayout> {
   }
 
   Future<void> _logout(BuildContext context) async {
-    // Coupe la connexion BLE proprement avant de quitter
     await ref.read(bleControllerProvider).disconnect();
 
     await Supabase.instance.client.auth.signOut();
@@ -79,16 +78,13 @@ class _MainLayoutState extends ConsumerState<MainLayout> {
           // Les pages de l'application (Home / Proms)
           _pages[_currentIndex],
 
-          // BOUTON FLOTTANT ADAPTATIF
           Positioned(
             bottom: 20,
             right: 20,
             child: FloatingActionButton.extended(
               heroTag: "ble_action_fab",
-              // LOGIQUE D'APPUI : Se Connecter OU Ouvrir
               onPressed: () async {
                 if (isConnected) {
-                  // --- CAS 1: DÉJÀ CONNECTÉ -> OUVRIR ---
                   await controller.sendOpenCommand();
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
