@@ -70,6 +70,8 @@ class CourseRemoteDatasource {
       params: {'p_user_id': id},
     );
 
+    print(res);
+
     return List<Map<String, dynamic>>.from(res);
   }
 

@@ -51,17 +51,7 @@ class CourseRepositoryImpl implements CourseRepository {
       final List<HomeCourses> result = [];
 
       for (final row in remoteData) {
-        final reservation = row['reservation'] as Map<String, dynamic>;
-        final courses = reservation['courses'] as List<dynamic>;
-
-        for (final course in courses) {
-          result.add(
-            HomeCoursesModel.fromMap(
-              reservation,
-              course as Map<String, dynamic>,
-            ),
-          );
-        }
+        result.add(HomeCoursesModel.fromMap(row));
       }
 
       await local.cacheUserCourses(
